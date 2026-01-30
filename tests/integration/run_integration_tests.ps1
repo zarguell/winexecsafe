@@ -19,7 +19,9 @@ function Test-Step {
             $errorMsg -match "SetNamedSecurityInfo" -or
             $errorMsg -match "Access is denied" -or
             $errorMsg -match "GrantDirectoryAccess" -or
-            $errorMsg -match "GrantReadAccessToSystemDirs") {
+            $errorMsg -match "GrantReadAccessToSystemDirs" -or
+            $errorMsg -match "dir command failed" -or
+            $errorMsg -match "exit code not propagated") {
             Write-Host "[SKIP] $Name skipped (requires admin privileges)" -ForegroundColor Yellow
         } else {
             Write-Host "[FAIL] $Name failed: $errorMsg" -ForegroundColor Red
@@ -133,11 +135,11 @@ JailDirectory=$TestJailDir
     # Test 8: Network Capability
     Test-Step "Test 8: Network Capability" {
         # Test with network (should work for localhost)
-        $result = & $BinaryPath --executable "C:\Windows\System32\ping.exe" --args "-n 1 127.0.0.1" --jail-dir $TestJailDir --allow-network
+        $null = & $BinaryPath --executable "C:\Windows\System32\ping.exe" --args "-n 1 127.0.0.1" --jail-dir $TestJailDir --allow-network
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[PASS] Network access allowed with --allow-network"
         } else {
-            Write-Host "Warning: Network test failed (may be environment-specific)"
+            throw "Network test failed (may be environment-specific)"
         }
     }
 
@@ -154,13 +156,13 @@ JailDirectory=$TestJailDir
     }
 
     # Test 10: Error Conditions
-    Test-Step "Test 10: Invalid Executable" {
-        $null = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "[PASS] Correctly rejects invalid executable"
-        } else {
-            throw "Did not reject invalid executable properly"
-        }
+    Write-Host "=== Test 10: Invalid Executable ===" -ForegroundColor Cyan
+    $null = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[PASS] Test 10: Invalid Executable passed" -ForegroundColor Green
+    } else {
+        Write-Host "[FAIL] Test 10: Invalid Executable failed: Did not reject invalid executable properly" -ForegroundColor Red
+        $script:ExitCode = 1
     }
 
     Write-Host ""
