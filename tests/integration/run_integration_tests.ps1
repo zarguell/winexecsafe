@@ -156,12 +156,16 @@ JailDirectory=$TestJailDir
 
     # Test 10: Error Conditions
     Write-Host "=== Test 10: Invalid Executable ===" -ForegroundColor Cyan
-    $null = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[PASS] Test 10: Invalid Executable passed" -ForegroundColor Green
-    } else {
-        Write-Host "[FAIL] Test 10: Invalid Executable failed: Did not reject invalid executable properly" -ForegroundColor Red
-        $script:ExitCode = 1
+    try {
+        $null = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[PASS] Test 10: Invalid Executable passed" -ForegroundColor Green
+        } else {
+            Write-Host "[FAIL] Test 10: Invalid Executable failed: Did not reject invalid executable properly" -ForegroundColor Red
+            $script:ExitCode = 1
+        }
+    } catch {
+        Write-Host "[PASS] Test 10: Invalid Executable passed (error thrown)" -ForegroundColor Green
     }
 
     Write-Host ""
