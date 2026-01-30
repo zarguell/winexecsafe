@@ -72,7 +72,7 @@ void TestMergeConfiguration() {
     Config cli;
     cli.executable = L"C:\\cli.exe";
     cli.allowNetwork = true;
-    cli.noCleanup = false;
+    cli.cleanup = false;
     
     MergeConfiguration(cli, base);
     

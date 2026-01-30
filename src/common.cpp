@@ -1,6 +1,7 @@
 #include "common.h"
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 void LogError(const wchar_t* function, const std::wstring& additionalInfo) {
     DWORD errorCode = GetLastError();

@@ -1,4 +1,5 @@
 #include "appcontainer.h"
+#include <userenv.h>
 
 PSID CreateOrGetAppContainerProfile(const std::wstring& containerName) {
     if (containerName.empty()) {

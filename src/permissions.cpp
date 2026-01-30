@@ -1,4 +1,5 @@
 #include "permissions.h"
+#include <aclapi.h>
 
 bool GrantDirectoryAccess(const std::wstring& directory, PSID appContainerSid, DWORD accessMask) {
     PACL oldDacl = nullptr;
