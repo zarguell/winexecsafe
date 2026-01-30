@@ -82,6 +82,7 @@ try {
 
     # Test 6: Config File Loading
     Test-Step "Test 6: Config File Loading" {
+        $configPath = Join-Path $PSScriptRoot "test_config.ini"
         $configContent = @"
 [General]
 Executable=C:\Windows\System32\cmd.exe
@@ -89,34 +90,35 @@ Arguments=/c echo from config
 JailDirectory=$TestJailDir
 Cleanup=true
 "@
-        Set-Content -Path "test_config.ini" -Value $configContent
+        Set-Content -Path $configPath -Value $configContent
         
-        $null = & $BinaryPath --config "test_config.ini" 2>&1
+        $null = & $BinaryPath --config $configPath 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[PASS] Config file loaded and used"
         } else {
             throw "Config file not loaded properly (exit code $LASTEXITCODE)"
         }
-        Remove-Item "test_config.ini" -ErrorAction SilentlyContinue
+        Remove-Item $configPath -ErrorAction SilentlyContinue
     }
 
     # Test 7: Config Precedence (CLI overrides config)
     Test-Step "Test 7: Config Precedence (CLI Overrides Config)" {
+        $configPath = Join-Path $PSScriptRoot "test_config.ini"
         $configContent = @"
 [General]
 Executable=C:\Windows\System32\cmd.exe
 Arguments=/c echo from config
 JailDirectory=$TestJailDir
 "@
-        Set-Content -Path "test_config.ini" -Value $configContent
+        Set-Content -Path $configPath -Value $configContent
         
-        $null = & $BinaryPath --config "test_config.ini" --args "/c echo from cli" 2>&1
+        $null = & $BinaryPath --config $configPath --args "/c echo from cli" 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[PASS] CLI arguments correctly override config"
         } else {
             throw "CLI arguments did not override config (exit code $LASTEXITCODE)"
         }
-        Remove-Item "test_config.ini" -ErrorAction SilentlyContinue
+        Remove-Item $configPath -ErrorAction SilentlyContinue
     }
 
     # Test 8: Network Capability
