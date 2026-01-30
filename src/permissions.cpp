@@ -73,12 +73,13 @@ bool GrantReadAccessToSystemDirs(PSID appContainerSid, const Config& config) {
         }
     }
     
+    bool allSucceeded = true;
     for (const auto& path : readPaths) {
         if (!GrantDirectoryAccess(path, appContainerSid, GENERIC_READ | GENERIC_EXECUTE)) {
             LogError(L"GrantReadAccessToSystemDirs", L"Failed to grant read access to: " + path);
-            return false;
+            allSucceeded = false;
         }
     }
     
-    return true;
+    return allSucceeded;
 }

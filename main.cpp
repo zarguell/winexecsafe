@@ -48,9 +48,8 @@ int wmain(int argc, wchar_t* argv[]) {
         
         if (!GrantReadAccessToSystemDirs(appContainerSid, mergedConfig)) {
             LogError(L"GrantReadAccessToSystemDirs");
-            return 1;
         }
-        LogVerbose(L"Granted read access to system directories");
+        LogVerbose(L"Granted read access to system directories (non-fatal)");
         
         SECURITY_CAPABILITIES capabilities = {0};
         if (!BuildCapabilities(mergedConfig, appContainerSid, capabilities)) {

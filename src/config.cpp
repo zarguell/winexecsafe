@@ -69,7 +69,7 @@ bool LoadConfigFile(const std::wstring& path, Config& config) {
     if (attr == INVALID_FILE_ATTRIBUTES) {
         DWORD error = GetLastError();
         if (error == ERROR_FILE_NOT_FOUND) {
-            return false;
+            return true;
         }
         LogError(L"LoadConfigFile", L"Failed to access config file: " + path);
         return false;
