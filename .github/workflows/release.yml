@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v1
+      
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+        shell: bash
+      
+      - name: Build Release
+        run: |
+          cmake --build build --config Release
+        shell: bash
+      
+      - name: Package
+        run: |
+          mkdir -p release
+          cp build/bin/Release/winexecsafe.exe release/
+          cp config_sample.ini release/config.ini
+          cp README.md release/
+        shell: bash
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            release/winexecsafe.exe
+            release/config.ini
+            release/README.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -15,8 +15,15 @@ else()
     message(FATAL_ERROR "winexecsafe is a Windows-only application")
 endif()
 
+# Main executable
 add_executable(winexecsafe
     main.cpp
+    src/common.cpp
+    src/config.cpp
+    src/appcontainer.cpp
+    src/permissions.cpp
+    src/capabilities.cpp
+    src/process.cpp
 )
 
 if(WIN32)
@@ -30,6 +37,31 @@ set_target_properties(winexecsafe PROPERTIES
     OUTPUT_NAME "winexecsafe"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# Enable testing
+enable_testing()
+
+# Test executable (simple assert-based unit tests)
+add_executable(winexecsafe_tests
+    tests/unit_tests.cpp
+    src/common.cpp
+    src/config.cpp
+)
+
+if(WIN32)
+    target_link_libraries(winexecsafe_tests
+        userenv.lib
+        advapi32.lib
+    )
+endif()
+
+set_target_properties(winexecsafe_tests PROPERTIES
+    OUTPUT_NAME "winexecsafe_tests"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Add test
+add_test(NAME UnitTests COMMAND winexecsafe_tests)
 
 install(TARGETS winexecsafe
     RUNTIME DESTINATION bin

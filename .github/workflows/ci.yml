@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v1
+      
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+        shell: bash
+      
+      - name: Build
+        run: |
+          cmake --build build --config Release
+        shell: bash
+      
+      - name: Run unit tests
+        run: |
+          ./build/bin/Release/winexecsafe_tests.exe
+        shell: bash
+      
+      - name: Run static analysis
+        run: |
+          pip install cppcheck
+          cppcheck --enable=all --inconclusive --std=c++17 --error-exitcode=1 src/
+        shell: bash
+  
+  integration-tests:
+    runs-on: windows-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v1
+      
+      - name: Build
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+          cmake --build build --config Release
+        shell: bash
+      
+      - name: Run integration tests
+        run: |
+          powershell -File tests/integration/run_integration_tests.ps1
+        shell: pwsh
