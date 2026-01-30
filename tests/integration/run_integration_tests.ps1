@@ -12,9 +12,9 @@ function Test-Step {
     Write-Host "=== $Name ===" -ForegroundColor Cyan
     try {
         & $Script
-        Write-Host "✓ $Name passed" -ForegroundColor Green
+        Write-Host "[PASS] $Name passed" -ForegroundColor Green
     } catch {
-        Write-Host "✗ $Name failed: $_" -ForegroundColor Red
+        Write-Host "[FAIL] $Name failed: $_" -ForegroundColor Red
         $script:ExitCode = 1
     }
 }
@@ -46,7 +46,7 @@ try {
         if (Test-Path "C:\IntegrationTestOutside.txt") {
             throw "File was created outside jail - isolation failed!"
         } else {
-            Write-Host "✓ File correctly not created outside jail"
+            Write-Host "[PASS] File correctly not created outside jail"
         }
     }
 
@@ -55,7 +55,7 @@ try {
         $result = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c echo test > $TestJailDir\inside.txt" --jail-dir $TestJailDir
         if (Test-Path "$TestJailDir\inside.txt") {
             $content = Get-Content "$TestJailDir\inside.txt"
-            Write-Host "✓ File created inside jail: $content"
+            Write-Host "[PASS] File created inside jail: $content"
         } else {
             throw "File not created inside jail"
         }
@@ -65,7 +65,7 @@ try {
     Test-Step "Test 4: System Command Execution" {
         $result = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c dir" --jail-dir $TestJailDir
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✓ dir command executed successfully"
+            Write-Host "[PASS] dir command executed successfully"
         } else {
             throw "dir command failed"
         }
@@ -75,7 +75,7 @@ try {
     Test-Step "Test 5: Exit Code Propagation" {
         & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c exit 42" --jail-dir $TestJailDir
         if ($LASTEXITCODE -eq 42) {
-            Write-Host "✓ Exit code correctly propagated: $LASTEXITCODE"
+            Write-Host "[PASS] Exit code correctly propagated: $LASTEXITCODE"
         } else {
             throw "Exit code not propagated correctly (expected 42, got $LASTEXITCODE)"
         }
@@ -94,7 +94,7 @@ Cleanup=true
         
         $result = & $BinaryPath --config "test_config.ini"
         if ($result -match "from config") {
-            Write-Host "✓ Config file loaded and used"
+            Write-Host "[PASS] Config file loaded and used"
         } else {
             throw "Config file not loaded properly"
         }
@@ -113,7 +113,7 @@ JailDirectory=$TestJailDir
         
         $result = & $BinaryPath --config "test_config.ini" --args "/c echo from cli"
         if ($result -match "from cli") {
-            Write-Host "✓ CLI arguments correctly override config"
+            Write-Host "[PASS] CLI arguments correctly override config"
         } else {
             throw "CLI arguments did not override config"
         }
@@ -125,7 +125,7 @@ JailDirectory=$TestJailDir
         # Test with network (should work for localhost)
         $result = & $BinaryPath --executable "C:\Windows\System32\ping.exe" --args "-n 1 127.0.0.1" --jail-dir $TestJailDir --allow-network
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✓ Network access allowed with --allow-network"
+            Write-Host "[PASS] Network access allowed with --allow-network"
         } else {
             Write-Host "Warning: Network test failed (may be environment-specific)"
         }
@@ -137,7 +137,7 @@ JailDirectory=$TestJailDir
         
         # Run with cleanup
         & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c echo test" --jail-dir $TestJailDir --container-name $containerName --cleanup
-        Write-Host "✓ Container with cleanup completed"
+        Write-Host "[PASS] Container with cleanup completed"
         
         # Note: We can't easily verify deletion without admin privileges
         # The cleanup happens automatically, and the test just verifies it doesn't error
@@ -147,7 +147,7 @@ JailDirectory=$TestJailDir
     Test-Step "Test 10: Invalid Executable" {
         $result = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
         if ($LASTEXITCODE -ne 0 -and $result -match "does not exist") {
-            Write-Host "✓ Correctly rejects invalid executable"
+            Write-Host "[PASS] Correctly rejects invalid executable"
         } else {
             throw "Did not reject invalid executable properly"
         }
@@ -156,9 +156,9 @@ JailDirectory=$TestJailDir
     Write-Host ""
     Write-Host "=== Integration Tests Summary ===" -ForegroundColor Cyan
     if ($ExitCode -eq 0) {
-        Write-Host "✓ All integration tests passed!" -ForegroundColor Green
+        Write-Host "[PASS] All integration tests passed!" -ForegroundColor Green
     } else {
-        Write-Host "✗ Some integration tests failed" -ForegroundColor Red
+        Write-Host "[FAIL] Some integration tests failed" -ForegroundColor Red
     }
 
 } finally {
