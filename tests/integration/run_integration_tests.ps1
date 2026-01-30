@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Stop"
 $BinaryPath = ".\build\bin\Release\winexecsafe.exe"
-$TestJailDir = "C:\WinExecSafeIntegrationTest"
+$TestJailDir = Join-Path $env:TEMP "WinExecSafeIntegrationTest"
 $ExitCode = 0
 
 function Test-Step {
@@ -14,19 +14,8 @@ function Test-Step {
         & $Script
         Write-Host "[PASS] $Name passed" -ForegroundColor Green
     } catch {
-        $errorMsg = $_.Exception.Message
-        if ($errorMsg -match "CreateOrGetAppContainerProfile" -or 
-            $errorMsg -match "SetNamedSecurityInfo" -or
-            $errorMsg -match "Access is denied" -or
-            $errorMsg -match "GrantDirectoryAccess" -or
-            $errorMsg -match "GrantReadAccessToSystemDirs" -or
-            $errorMsg -match "dir command failed" -or
-            $errorMsg -match "exit code not propagated") {
-            Write-Host "[SKIP] $Name skipped (requires admin privileges)" -ForegroundColor Yellow
-        } else {
-            Write-Host "[FAIL] $Name failed: $errorMsg" -ForegroundColor Red
-            $script:ExitCode = 1
-        }
+        Write-Host "[FAIL] $Name failed: $_" -ForegroundColor Red
+        $script:ExitCode = 1
     }
 }
 

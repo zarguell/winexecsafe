@@ -62,22 +62,18 @@ bool GrantDirectoryAccess(const std::wstring& directory, PSID appContainerSid, D
 }
 
 bool GrantReadAccessToSystemDirs(PSID appContainerSid, const Config& config) {
-    std::vector<std::wstring> readPaths;
-    readPaths.push_back(L"C:\\Windows\\System32");
-    readPaths.push_back(L"C:\\Windows\\SysWOW64");
+    // Only grant access to user-specified additional paths.
+    // System directories like C:\Windows\System32 are already accessible to
+    // AppContainers via inherited permissions, and modifying their ACLs requires admin.
     
+    bool allSucceeded = true;
     for (const auto& path : config.additionalReadPaths) {
         DWORD attr = GetFileAttributesW(path.c_str());
         if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
-            readPaths.push_back(path);
-        }
-    }
-    
-    bool allSucceeded = true;
-    for (const auto& path : readPaths) {
-        if (!GrantDirectoryAccess(path, appContainerSid, GENERIC_READ | GENERIC_EXECUTE)) {
-            LogError(L"GrantReadAccessToSystemDirs", L"Failed to grant read access to: " + path);
-            allSucceeded = false;
+            if (!GrantDirectoryAccess(path, appContainerSid, GENERIC_READ | GENERIC_EXECUTE)) {
+                LogError(L"GrantReadAccessToSystemDirs", L"Failed to grant read access to: " + path);
+                allSucceeded = false;
+            }
         }
     }
     

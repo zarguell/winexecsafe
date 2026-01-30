@@ -49,10 +49,8 @@ int wmain(int argc, wchar_t* argv[]) {
         }
         LogVerbose(L"Granted access to jail directory: " + mergedConfig.jailDir);
         
-        if (!GrantReadAccessToSystemDirs(appContainerSid, mergedConfig)) {
-            LogError(L"GrantReadAccessToSystemDirs");
-        }
-        LogVerbose(L"Granted read access to system directories (non-fatal)");
+        GrantReadAccessToSystemDirs(appContainerSid, mergedConfig);
+        LogVerbose(L"Processed additional read paths");
         
         SECURITY_CAPABILITIES capabilities = {0};
         if (!BuildCapabilities(mergedConfig, appContainerSid, capabilities)) {
