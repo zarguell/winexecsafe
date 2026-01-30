@@ -15,7 +15,7 @@ void LogError(const wchar_t* function, const std::wstring& additionalInfo) {
     }
     
     wchar_t* messageBuffer = nullptr;
-    size_t size = FormatMessageW(
+    FormatMessageW(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr,
         errorCode,
