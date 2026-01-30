@@ -5,9 +5,10 @@ PSID CreateOrGetAppContainerProfile(const std::wstring& containerName) {
     if (containerName.empty()) {
         SYSTEMTIME st;
         GetLocalTime(&st);
+        DWORD pid = GetCurrentProcessId();
         wchar_t name[64];
-        swprintf_s(name, L"WinExecSafe_%04d%02d%02d_%02d%02d%02d",
-                   st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+        swprintf_s(name, L"WinExecSafe_%04d%02d%02d_%02d%02d%02d_%d",
+                   st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, pid);
         
         std::wstring displayName = L"WinExecSafe Container - ";
         displayName += name;

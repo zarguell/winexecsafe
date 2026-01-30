@@ -20,9 +20,19 @@ function Test-Step {
 }
 
 function Cleanup {
-    Write-Host "Cleaning up test directories..."
+    Write-Host "Cleaning up test directories and AppContainer profiles..."
     if (Test-Path $TestJailDir) {
         Remove-Item -Path $TestJailDir -Recurse -Force
+    }
+    
+    # Clean up any orphaned WinExecSafe AppContainer profiles
+    try {
+        $profiles = Get-AppxPackage -AllUserPackages | Where-Object { $_.Name -like "WinExecSafe*" }
+        foreach ($profile in $profiles) {
+            Remove-AppxPackage -Package $profile.PackageFullName -ErrorAction SilentlyContinue
+        }
+    } catch {
+        # Ignore cleanup errors for profiles
     }
 }
 
