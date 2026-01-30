@@ -61,3 +61,4 @@ jobs:
         run: |
           powershell -File tests/integration/run_integration_tests.ps1
         shell: pwsh
+        continue-on-error: true

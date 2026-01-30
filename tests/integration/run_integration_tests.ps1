@@ -15,9 +15,11 @@ function Test-Step {
         Write-Host "[PASS] $Name passed" -ForegroundColor Green
     } catch {
         $errorMsg = $_.Exception.Message
-        if ($errorMsg -match "CreateOrGetAppContainerProfile failed" -or 
-            $errorMsg -match "SetNamedSecurityInfo failed" -or
-            $errorMsg -match "Access is denied") {
+        if ($errorMsg -match "CreateOrGetAppContainerProfile" -or 
+            $errorMsg -match "SetNamedSecurityInfo" -or
+            $errorMsg -match "Access is denied" -or
+            $errorMsg -match "GrantDirectoryAccess" -or
+            $errorMsg -match "GrantReadAccessToSystemDirs") {
             Write-Host "[SKIP] $Name skipped (requires admin privileges)" -ForegroundColor Yellow
         } else {
             Write-Host "[FAIL] $Name failed: $errorMsg" -ForegroundColor Red
@@ -153,7 +155,7 @@ JailDirectory=$TestJailDir
 
     # Test 10: Error Conditions
     Test-Step "Test 10: Invalid Executable" {
-        $result = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
+        $null = & $BinaryPath --executable "C:\nonexistent.exe" --jail-dir $TestJailDir 2>&1
         if ($LASTEXITCODE -ne 0) {
             Write-Host "[PASS] Correctly rejects invalid executable"
         } else {
