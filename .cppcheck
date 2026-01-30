@@ -1,0 +1,8 @@
+// Suppress common false positives
+missingIncludeSystem
+unusedFunction
+constParameterReference
+constParameter
+useStlAlgorithm
+redundantAssignment
+normalCheckLevelMaxBranches
