@@ -22,7 +22,10 @@ int wmain(int argc, wchar_t* argv[]) {
         LoadConfigFile(config.configPath, mergedConfig);
     } else {
         std::wstring defaultConfig = L"C:\\ProgramData\\winexecsafe\\config.ini";
-        LoadConfigFile(defaultConfig, mergedConfig);
+        DWORD attr = GetFileAttributesW(defaultConfig.c_str());
+        if (attr != INVALID_FILE_ATTRIBUTES) {
+            LoadConfigFile(defaultConfig, mergedConfig);
+        }
     }
     
     MergeConfiguration(config, mergedConfig);
