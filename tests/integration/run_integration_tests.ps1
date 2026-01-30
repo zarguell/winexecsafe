@@ -52,7 +52,7 @@ try {
 
     # Test 2: Filesystem Isolation - Try to write outside jail
     Test-Step "Test 2: Filesystem Isolation (Write Outside Jail)" {
-        $null = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c echo test > C:\IntegrationTestOutside.txt" --jail-dir $TestJailDir 2>&1
+        $null = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c echo test > C:\IntegrationTestOutside.txt" --jail-dir $TestJailDir 2>$null
         if (Test-Path "C:\IntegrationTestOutside.txt") {
             throw "File was created outside jail - isolation failed!"
         } else {
@@ -72,7 +72,7 @@ try {
 
     # Test 4: System Command Execution
     Test-Step "Test 4: System Command Execution" {
-        $result = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c dir" --jail-dir $TestJailDir --working-dir $TestJailDir
+        $null = & $BinaryPath --executable "C:\Windows\System32\cmd.exe" --args "/c dir" --jail-dir $TestJailDir --working-dir $TestJailDir 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[PASS] dir command executed successfully"
         } else {
